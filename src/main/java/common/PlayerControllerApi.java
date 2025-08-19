@@ -5,6 +5,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
+import models.PlayerDto;
 
 
 import java.util.Map;
@@ -31,14 +32,13 @@ public class PlayerControllerApi {
                 .response();
     }
 
-    public Response getAllPlayersNew() {
-        return baseRequest()
-                .when()
-                .get("/player/get/all")
-                .then()
-                .log().status()
-                .log().body()
-                .extract().response();
+    public Response getAllPlayers() {
+        return extractResponse(
+                baseRequest()
+                        .when()
+                        .get("/player/get/all")
+                        .then()
+        );
     }
 
     public Response deletePlayer(String editor, int playerId) {
@@ -52,17 +52,24 @@ public class PlayerControllerApi {
         );
     }
 
-    public Response createPlayer(String editor, Map<String, Object> params) {
+    public Response createPlayer(String editor, PlayerDto player) {
         return extractResponse(
                 baseRequest()
-                        .queryParams(params)
+                        .queryParams(Map.of(
+                                "age", player.age,
+                                "login", player.login,
+                                "screenName", player.screenName,
+                                "gender", player.gender,
+                                "role", player.role,
+                                "password", player.password
+                        ))
                         .when()
                         .get("/player/create/" + editor)
                         .then()
         );
     }
 
-    public Response getPlayerByPlayerId(int playerId) {
+    public Response getPlayerById(int playerId) {
         return extractResponse(
                 baseRequest()
                         .contentType("application/json")
@@ -71,14 +78,13 @@ public class PlayerControllerApi {
                         .post("/player/get")
                         .then()
         );
-
     }
 
-    public Response updatePlayer(String editor, Map<String, Object> params, int playerId) {
+    public Response updatePlayer(String editor, PlayerDto player, int playerId) {
         return extractResponse(
                 baseRequest()
                         .contentType("application/json")
-                        .body(params)
+                        .body(player)
                         .when()
                         .patch("/player/update/" + editor + "/" + playerId)
                         .then()

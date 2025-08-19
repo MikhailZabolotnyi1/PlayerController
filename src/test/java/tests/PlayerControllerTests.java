@@ -2,6 +2,7 @@ package tests;
 
 import common.PlayerControllerApi;
 import io.restassured.response.Response;
+import models.PlayerDto;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -15,56 +16,44 @@ public class PlayerControllerTests {
         playerApi = new PlayerControllerApi();
     }
 
-    @Test
-    public void testCreatePlayer(){
-        Map<String, Object> playerData = Map.of(
-                "age", 22,
-                "login", "Rumba",
-                "screenName", "Rumba43",
-                "gender", "male",
-                "role", "user",
-                "password", "password123"
-        );
-        Response createResponse = new PlayerControllerApi().createPlayer("supervisor", playerData);
-        int playerId = createResponse.jsonPath().getInt("id");
-
-        Response getPlayerResponse = new PlayerControllerApi().getPlayerByPlayerId(playerId);
-
-        Response deleteResponse = new PlayerControllerApi().deletePlayer("supervisor", playerId);
-        deleteResponse.then().statusCode(204);
+    private int createPlayer(PlayerDto player) {
+        Response response = playerApi.createPlayer("supervisor", player);
+        return response.jsonPath().getInt("id");
     }
 
-    @Test void testUpdatePlayer(){
-        Map<String, Object> playerData = Map.of(
-                "age", 27,
-                "login", "Rumba",
-                "screenName", "Rumba43",
-                "gender", "male",
-                "role", "user",
-                "password", "password123"
-        );
-        Response createResponse = new PlayerControllerApi().createPlayer("supervisor", playerData);
-        int playerId = createResponse.jsonPath().getInt("id");
+    private void deletePlayer(int playerId) {
+        Response response = playerApi.deletePlayer("supervisor", playerId);
+        response.then().statusCode(204);
+    }
 
-        Response getPlayerResponse = new PlayerControllerApi().getPlayerByPlayerId(playerId);
+    @Test
+    public void testCreatePlayer() {
+        PlayerDto player = new PlayerDto(22, "Rumba", "Rumba43", "male", "user", "password123");
+        int playerId = createPlayer(player);
 
-        Map<String, Object> updatedPlayerData = Map.of(
-                "age", 25,
-                "gender", "male",
-                "login", "JackieChan",
-                "password", "password123",
-                "role", "user",
-                "screenName", "Rumba29"
-                );
-        Response updatePlayerResponse = new PlayerControllerApi().updatePlayer("supervisor",updatedPlayerData, playerId);
-        Response getUpdatedPlayerResponse = new PlayerControllerApi().getPlayerByPlayerId(playerId);
+        Response getResponse = playerApi.getPlayerById(playerId);
+        getResponse.then().statusCode(200);
 
-        Response deleteResponse = new PlayerControllerApi().deletePlayer("supervisor", playerId);
-        deleteResponse.then().statusCode(204);
+        deletePlayer(playerId);
+    }
+
+    @Test
+    public void testUpdatePlayer() {
+        PlayerDto player = new PlayerDto(27, "Rumba", "Rumba43", "male", "user", "password123");
+        int playerId = createPlayer(player);
+
+        PlayerDto updatedPlayer = new PlayerDto(25, "JackieChan", "Rumba29", "male", "user", "password123");
+        Response updateResponse = playerApi.updatePlayer("supervisor", updatedPlayer, playerId);
+        updateResponse.then().statusCode(200);
+
+        Response getUpdatedResponse = playerApi.getPlayerById(playerId);
+        getUpdatedResponse.then().statusCode(200);
+
+        deletePlayer(playerId);
     }
 
     @Test
     public void testGetAllPlayers(){
-        Response response = new PlayerControllerApi().getAllPlayersNew();
+        Response response = new PlayerControllerApi().getAllPlayers();
     }
 }
