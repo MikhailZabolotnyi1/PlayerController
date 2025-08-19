@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="PlayerControllerSuite">
+    <test name="PlayerControllerTests" >
+                <classes>
+                    <class name="tests.PlayerControllerTests"/>
+                </classes>
+    </test>
+</suite>

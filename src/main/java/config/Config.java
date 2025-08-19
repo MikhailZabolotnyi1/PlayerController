@@ -13,4 +13,8 @@ public class Config {
             throw new RuntimeException("Cannot load config properties", e);
         }
     }
+
+    public static String getBaseURL() {
+        return props.getProperty("base.url");
+    }
 }
