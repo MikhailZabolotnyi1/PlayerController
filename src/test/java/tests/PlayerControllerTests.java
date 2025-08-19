@@ -3,15 +3,14 @@ package tests;
 import common.PlayerControllerApi;
 import io.restassured.response.Response;
 import models.PlayerDto;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Map;
 
 public class PlayerControllerTests {
     private PlayerControllerApi playerApi;
 
-    @BeforeClass
+    @BeforeMethod
     public void setup(){
         playerApi = new PlayerControllerApi();
     }
@@ -27,7 +26,11 @@ public class PlayerControllerTests {
     }
 
     @Test
-    public void testCreatePlayer() {
+    public void testCreatePlayer() throws InterruptedException {
+
+        Thread.sleep(3000);
+        System.out.println("First");
+
         PlayerDto player = new PlayerDto(22, "Rumba", "Rumba43", "male", "user", "password123");
         int playerId = createPlayer(player);
 
@@ -38,8 +41,12 @@ public class PlayerControllerTests {
     }
 
     @Test
-    public void testUpdatePlayer() {
-        PlayerDto player = new PlayerDto(27, "Rumba", "Rumba43", "male", "user", "password123");
+    public void testUpdatePlayer() throws InterruptedException {
+
+        Thread.sleep(3000);
+        System.out.println("Second");
+
+        PlayerDto player = new PlayerDto(22, "verycoolmax", "Max", "male", "user", "password123");
         int playerId = createPlayer(player);
 
         PlayerDto updatedPlayer = new PlayerDto(25, "JackieChan", "Rumba29", "male", "user", "password123");
@@ -53,7 +60,10 @@ public class PlayerControllerTests {
     }
 
     @Test
-    public void testGetAllPlayers(){
+    public void testGetAllPlayers() throws InterruptedException {
+        Thread.sleep(3000);
+        System.out.println("Last");
+
         Response response = new PlayerControllerApi().getAllPlayers();
     }
 }
