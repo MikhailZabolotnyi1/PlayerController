@@ -1,0 +1,25 @@
+# Maven target folder
+/target/
+
+# IntelliJ IDEA project files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Allure results
+allure-results/
+allure-report/
+
+# JetBrains IDE settings
+out/
+
+# Temp files
+*.class
