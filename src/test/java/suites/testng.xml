@@ -4,7 +4,7 @@
     <listeners>
         <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
     </listeners>
-    <test name="PlayerControllerTests" >
+    <test name="test" >
                 <classes>
                     <class name="tests.PositivePlayerControllerTests"/>
                     <class name="tests.NegativePlayerControllerTests"/>

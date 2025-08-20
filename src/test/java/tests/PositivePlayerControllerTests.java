@@ -1,6 +1,7 @@
 package tests;
 
 import common.PlayerControllerApi;
+import io.qameta.allure.testng.AllureTestNg;
 import io.restassured.response.Response;
 import models.PlayerDto;
 import org.testng.annotations.AfterMethod;
@@ -13,7 +14,7 @@ import java.util.UUID;
 
 import static org.testng.Assert.assertEquals;
 
-@Listeners
+@Listeners({AllureTestNg.class})
 public class PositivePlayerControllerTests {
     private PlayerControllerApi playerApi;
     private int playerId;

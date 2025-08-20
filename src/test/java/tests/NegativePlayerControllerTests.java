@@ -144,16 +144,6 @@ public class NegativePlayerControllerTests {
         assertEquals(response.statusCode(), 400, "Expected 400 for invalid role update");
     }
 
-    @Test
-    public void testGetAllPlayers() throws InterruptedException {
-        Thread.sleep(3000);
-        System.out.println("Last");
-
-        getRandomUserName("Jamm");
-
-        Response response = new PlayerControllerApi().getAllPlayers();
-    }
-
     @AfterMethod(alwaysRun = true)
     public void cleanup() {
         if (playerId != -1) {
