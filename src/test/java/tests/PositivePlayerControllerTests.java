@@ -2,15 +2,18 @@ package tests;
 
 import common.BaseTest;
 import io.qameta.allure.Allure;
-import io.qameta.allure.testng.AllureTestNg;
 import io.restassured.response.Response;
 import models.PlayerDto;
-import org.testng.annotations.Listeners;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterSuite;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
+import java.util.ArrayList;
+import java.util.List;
 
-@Listeners({AllureTestNg.class})
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 public class PositivePlayerControllerTests extends BaseTest {
 
     @Test
@@ -20,7 +23,7 @@ public class PositivePlayerControllerTests extends BaseTest {
         String login = getRandomUserName("User");
         String screenName = getRandomUserName("screenNameUser");
 
-        int playerId = createPlayer(new PlayerDto(
+        Integer playerId = createPlayer(new PlayerDto(
                 22, login, screenName, "male", "user", "password123"));
 
         Allure.step("Updating player with new age");
@@ -49,10 +52,9 @@ public class PositivePlayerControllerTests extends BaseTest {
         String login = getRandomUserName("User");
         String screenName = getRandomUserName("screenNameUser");
 
-        int playerId = createPlayer(new PlayerDto(
+        Integer playerId = createPlayer(new PlayerDto(
                 20, login, screenName, "male", "user", "password123"));
 
-        Allure.step("Fetching player by ID");
         Response getResponse = getPlayerById(playerId);
         getResponse.then().statusCode(200);
 
@@ -73,7 +75,7 @@ public class PositivePlayerControllerTests extends BaseTest {
 
         String login = getRandomUserName("User");
         String screenName = getRandomUserName("screenNameUser");
-        int playerId = createPlayer(new PlayerDto(25, login, screenName, "male", "user", "password123"));
+        Integer playerId = createPlayer(new PlayerDto(25, login, screenName, "male", "user", "password123"));
 
         Allure.step("Fetching player by ID: " + playerId);
         Response response = getPlayerById(playerId);
@@ -98,10 +100,10 @@ public class PositivePlayerControllerTests extends BaseTest {
         Response response = getAllPlayers();
         assertEquals(response.statusCode(), 200, "Expected status code 200");
 
-        int playersCount = response.jsonPath().getList("players").size();
+        Integer playersCount = response.jsonPath().getList("players").size();
         Allure.step("Total players fetched: " + playersCount);
 
-        assertEquals(playersCount >= 0, true, "Expected non-negative number of players");
+        assertTrue(playersCount >= 2, "Expected more players in database!");
     }
 
     @Test //expected to fail
@@ -110,7 +112,7 @@ public class PositivePlayerControllerTests extends BaseTest {
 
         String login = getRandomUserName("User");
         String screenName = getRandomUserName("screenNameUser");
-        int currentPlayerId = getPlayerIdFromResponse(createPlayerWithResponse(new PlayerDto(25, login, screenName, "male", "user", "password123"), false));
+        Integer currentPlayerId = getPlayerIdFromResponse(createPlayerWithResponse(new PlayerDto(25, login, screenName, "male", "user", "password123")));
 
         deletePlayer(currentPlayerId);
 
@@ -119,6 +121,18 @@ public class PositivePlayerControllerTests extends BaseTest {
         assertEquals(getResponse.statusCode(), 404, "Expected 404 after deletion");
 
         Allure.step("Test testDeletePlayer finished successfully");
+    }
+
+    @Test
+    public void test() {
+        getAllPlayers();
+//        deletePlayer(2105958373);
+//        deletePlayer(1755228474);
+//        deletePlayer(342844424);
+//        deletePlayer(1719104415);
+//        deletePlayer(1717572806);
+//        deletePlayer(1471130581);
+//        getAllPlayers();
     }
 
 }

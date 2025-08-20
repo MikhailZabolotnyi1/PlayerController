@@ -2,10 +2,14 @@ package tests;
 
 import common.BaseTest;
 import io.restassured.response.Response;
-import io.restassured.response.ResponseBody;
 import models.PlayerDto;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterSuite;
 import org.testng.annotations.Test;
 
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 
@@ -14,7 +18,7 @@ public class NegativePlayerControllerTests extends BaseTest {
 
     @Test
     public void testUpdatePlayerNegative() {
-        int playerId = createPlayer(new PlayerDto(
+        Integer playerId = createPlayer(new PlayerDto(
                 22, "verycoolmax", "max", "male", "user", "password123"));
 
         PlayerDto updatedPlayer = new PlayerDto(15, "JackieChan", "Rumba29", "male", "user", "password123");
@@ -34,55 +38,55 @@ public class NegativePlayerControllerTests extends BaseTest {
     @Test
     public void testCreatePlayerNegativeWithInvalidAge() {
 
-        int statusCode = getStatusCodeFromResponse(createPlayerWithResponse(new PlayerDto(
-                14, "Rumba", "Rumba43", "male", "user", "password123"), false));
+        Integer statusCode = getStatusCodeFromResponse(createPlayerWithResponse(new PlayerDto(
+                14, "Rumba", "Rumba43", "male", "user", "password123")));
 
         assertEquals(statusCode, 400, "Wrong status code for underage");
     }
 
     @Test
     public void testCreatePlayerNegativeWithEmptyLogin() {
-        int statusCode = createPlayerWithResponse(new PlayerDto(
-                20, "", "NoLogin", "male", "user", "password123"), false).statusCode();
+        Integer statusCode = createPlayerWithResponse(new PlayerDto(
+                20, "", "NoLogin", "male", "user", "password123")).statusCode();
 
         assertEquals(statusCode, 400, "Wrong status code for empty login");
     }
 
     @Test
     public void testCreatePlayerNegativeWithInvalidRole() {
-        int statusCode = createPlayerWithResponse(new PlayerDto(
-                20, "User123", "NoLogin", "male", "worker", "password123"), false).statusCode();
+        Integer statusCode = createPlayerWithResponse(new PlayerDto(
+                20, "User123", "NoLogin", "male", "worker", "password123")).statusCode();
 
         assertEquals(statusCode, 400, "Wrong status code for invalid role");
     }
 
     @Test
     public void testCreatePlayerNegativeWithEmptyPassword() {
-        int statusCode = createPlayerWithResponse(new PlayerDto(
-                20, "Mucha", "Mucha33", "male", "user", ""), false).statusCode();
+        Integer statusCode = createPlayerWithResponse(new PlayerDto(
+                20, "Mucha", "Mucha33", "male", "user", "")).statusCode();
         assertEquals(statusCode, 400, "Wrong status code for empty password");
     }
 
     @Test
     public void testCreatePlayerNegativeWithInvalidPassword() {
-        int playerId = createPlayer(new PlayerDto(
-                20, "Mucha", "Mucha33", "male", "user", "22"));
+        Integer playerId = getPlayerIdFromResponse(createPlayerWithResponse(new PlayerDto(
+                20, "Mucha", "Mucha33", "male", "user", "22")));
 
         assertEquals(getStatusCodeFromResponse(getPlayerById(playerId)), 400, "Wrong status code for invalid password");
     }
 
     @Test //expected to fail
     public void testCreatePlayerNegativeWithInvalidGender() {
-        int playerId = createPlayer(new PlayerDto(
+        Integer playerId = createPlayer(new PlayerDto(
                 20, "Mucha", "Mucha33", "Helicopter", "user", "22"));
 
-        int statusCode = getStatusCodeFromResponse(getPlayerById(playerId));
+        Integer statusCode = getStatusCodeFromResponse(getPlayerById(playerId));
         assertEquals(statusCode, 400, "Wrong status code for invalid gender");
     }
 
     @Test // expected to fail due to backend bug
     public void testUpdatePlayerNegativeWithEmptyLogin() {
-        int playerId = createPlayer(new PlayerDto(
+        Integer playerId = createPlayer(new PlayerDto(
                 25, "Rumba", "Rumba4", "male", "user", "password123"));
 
         PlayerDto updatedPlayer = new PlayerDto(
@@ -94,7 +98,7 @@ public class NegativePlayerControllerTests extends BaseTest {
 
     @Test // expected to fail due to backend bug
     public void testUpdatePlayerNegativeWithInvalidRole() {
-        int playerId = createPlayer(new PlayerDto(
+        Integer playerId = createPlayer(new PlayerDto(
                 25, "validUser3", "Max", "male", "user", "password123"
         ));
 
