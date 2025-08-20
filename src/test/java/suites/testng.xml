@@ -1,9 +1,13 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
 
-<suite name="PlayerControllerSuite">
+<suite name="PlayerControllerSuite" thread-count="3" parallel="methods">
+    <listeners>
+        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+    </listeners>
     <test name="PlayerControllerTests" >
                 <classes>
-                    <class name="tests.PlayerControllerTests"/>
+                    <class name="tests.PositivePlayerControllerTests"/>
+                    <class name="tests.NegativePlayerControllerTests"/>
                 </classes>
     </test>
 </suite>
