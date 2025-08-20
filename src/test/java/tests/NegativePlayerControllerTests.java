@@ -1,46 +1,16 @@
 package tests;
 
-import common.PlayerControllerApi;
+import common.BaseTest;
 import io.restassured.response.Response;
+import io.restassured.response.ResponseBody;
 import models.PlayerDto;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Random;
 
 import static org.testng.Assert.assertEquals;
 
 
-public class NegativePlayerControllerTests {
-    private PlayerControllerApi playerApi;
-    private int playerId;
-
-    @BeforeMethod
-    public void setup() throws InterruptedException {
-        playerApi = new PlayerControllerApi();
-        playerId = -1;
-
-        Thread.sleep(3000);
-        System.out.println("Threads check");
-    }
-
-    private int createPlayer(PlayerDto player) {
-        Response response = playerApi.createPlayer("supervisor", player);
-        playerId = response.jsonPath().getInt("id");
-        return playerId;
-    }
-
-    private void deletePlayer(int playerId) {
-        Response response = playerApi.deletePlayer("supervisor", playerId);
-        response.then().statusCode(204);
-    }
-
-    private String getRandomUserName (String userName) {
-        Random rand = new Random();
-        int bigRandomNumber = 100000 + rand.nextInt(1000000);
-        return userName + bigRandomNumber;
-    }
+public class NegativePlayerControllerTests extends BaseTest {
 
     @Test
     public void testUpdatePlayerNegative() {
@@ -48,11 +18,11 @@ public class NegativePlayerControllerTests {
                 22, "verycoolmax", "max", "male", "user", "password123"));
 
         PlayerDto updatedPlayer = new PlayerDto(15, "JackieChan", "Rumba29", "male", "user", "password123");
-        Response updateResponse = playerApi.updatePlayer("supervisor", updatedPlayer, playerId);
+        Response updateResponse = updatePlayer("supervisor", updatedPlayer, playerId);
 
         assertEquals(updateResponse.statusCode(), 403, "Expected status 403 when trying to set invalid age");
 
-        Response getUpdatedResponse = playerApi.getPlayerById(playerId);
+        Response getUpdatedResponse = getPlayerById(playerId);
         getUpdatedResponse.then().statusCode(200);
         PlayerDto actualPlayer = getUpdatedResponse.as(PlayerDto.class);
 
@@ -62,42 +32,35 @@ public class NegativePlayerControllerTests {
     }
 
     @Test
-    public void testCreatePlayerNegativeWithInvalidAge() throws InterruptedException {
-        Thread.sleep(3000);
-        System.out.println("First");
+    public void testCreatePlayerNegativeWithInvalidAge() {
 
-        int playerId = createPlayer(new PlayerDto(
-                14, "Rumba", "Rumba43", "male", "user", "password123"));
+        int statusCode = getStatusCodeFromResponse(createPlayerWithResponse(new PlayerDto(
+                14, "Rumba", "Rumba43", "male", "user", "password123"), false));
 
-        Response getResponse = playerApi.getPlayerById(playerId);
-        assertEquals(getResponse.statusCode(), 400, "Expected 403 for underage");
+        assertEquals(statusCode, 400, "Wrong status code for underage");
     }
 
     @Test
     public void testCreatePlayerNegativeWithEmptyLogin() {
-        int playerId = createPlayer(new PlayerDto(
-                20, "", "NoLogin", "male", "user", "password123"));
+        int statusCode = createPlayerWithResponse(new PlayerDto(
+                20, "", "NoLogin", "male", "user", "password123"), false).statusCode();
 
-        Response response = playerApi.getPlayerById(playerId);
-        assertEquals(response.statusCode(), 400, "Expected 400 for empty login");
+        assertEquals(statusCode, 400, "Wrong status code for empty login");
     }
 
     @Test
     public void testCreatePlayerNegativeWithInvalidRole() {
-        int playerId = createPlayer(new PlayerDto(
-                20, "User123", "NoLogin", "male", "worker", "password123"));
+        int statusCode = createPlayerWithResponse(new PlayerDto(
+                20, "User123", "NoLogin", "male", "worker", "password123"), false).statusCode();
 
-        Response response = playerApi.getPlayerById(playerId);
-        assertEquals(response.statusCode(), 400, "Expected 400 for invalid role");
+        assertEquals(statusCode, 400, "Wrong status code for invalid role");
     }
 
     @Test
     public void testCreatePlayerNegativeWithEmptyPassword() {
-        int playerId = createPlayer(new PlayerDto(
-                20, "Mucha", "Mucha33", "male", "user", ""));
-
-        Response response = playerApi.getPlayerById(playerId);
-        assertEquals(response.statusCode(), 400, "Expected 400 for empty password");
+        int statusCode = createPlayerWithResponse(new PlayerDto(
+                20, "Mucha", "Mucha33", "male", "user", ""), false).statusCode();
+        assertEquals(statusCode, 400, "Wrong status code for empty password");
     }
 
     @Test
@@ -105,20 +68,19 @@ public class NegativePlayerControllerTests {
         int playerId = createPlayer(new PlayerDto(
                 20, "Mucha", "Mucha33", "male", "user", "22"));
 
-        Response response = playerApi.getPlayerById(playerId);
-        assertEquals(response.statusCode(), 400, "Expected 400 for invalid password");
+        assertEquals(getStatusCodeFromResponse(getPlayerById(playerId)), 400, "Wrong status code for invalid password");
     }
 
-    @Test
+    @Test //expected to fail
     public void testCreatePlayerNegativeWithInvalidGender() {
         int playerId = createPlayer(new PlayerDto(
                 20, "Mucha", "Mucha33", "Helicopter", "user", "22"));
 
-        Response response = playerApi.getPlayerById(playerId);
-        assertEquals(response.statusCode(), 400, "Expected 400 for invalid gender");
+        int statusCode = getStatusCodeFromResponse(getPlayerById(playerId));
+        assertEquals(statusCode, 400, "Wrong status code for invalid gender");
     }
 
-    @Test
+    @Test // expected to fail due to backend bug
     public void testUpdatePlayerNegativeWithEmptyLogin() {
         int playerId = createPlayer(new PlayerDto(
                 25, "Rumba", "Rumba4", "male", "user", "password123"));
@@ -126,11 +88,11 @@ public class NegativePlayerControllerTests {
         PlayerDto updatedPlayer = new PlayerDto(
                 25, "", "Rumba4", "male", "user", "password123");
 
-        Response response = playerApi.updatePlayer("supervisor", updatedPlayer, playerId);
-        assertEquals(response.statusCode(), 400, "Expected 400 for empty login update");
+        Response response = updatePlayer("supervisor", updatedPlayer, playerId);
+        assertEquals(response.statusCode(), 400, "Wrong status code for empty login update");
     }
 
-    @Test
+    @Test // expected to fail due to backend bug
     public void testUpdatePlayerNegativeWithInvalidRole() {
         int playerId = createPlayer(new PlayerDto(
                 25, "validUser3", "Max", "male", "user", "password123"
@@ -140,15 +102,7 @@ public class NegativePlayerControllerTests {
                 25, "Max", "verycoolmax", "male", "worker", "password123"
         );
 
-        Response response = playerApi.updatePlayer("supervisor", updatedPlayer, playerId);
-        assertEquals(response.statusCode(), 400, "Expected 400 for invalid role update");
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void cleanup() {
-        if (playerId != -1) {
-            Response deleteResponse = playerApi.deletePlayer("supervisor", playerId);
-            deleteResponse.then().statusCode(204);
-        }
+        Response response = updatePlayer("supervisor", updatedPlayer, playerId);
+        assertEquals(response.statusCode(), 400, "Wrong status code for invalid role update");
     }
 }

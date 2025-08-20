@@ -1,4 +1,4 @@
-package common;
+package apiCalls;
 
 import config.Config;
 import io.restassured.RestAssured;
