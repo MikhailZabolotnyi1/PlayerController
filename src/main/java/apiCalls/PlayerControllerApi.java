@@ -69,15 +69,18 @@ public class PlayerControllerApi {
         );
     }
 
-    public Response getPlayerById(int playerId) {
-        return extractResponse(
-                baseRequest()
-                        .contentType("application/json")
-                        .body(Map.of("playerId", playerId))
-                        .when()
-                        .post("/player/get")
-                        .then()
-        );
+    public Response getPlayerById(Integer playerId) {
+        if (playerId != null) {
+            return extractResponse(
+                    baseRequest()
+                            .contentType("application/json")
+                            .body(Map.of("playerId", playerId))
+                            .when()
+                            .post("/player/get")
+                            .then()
+            );
+        }
+         return null;
     }
 
     public Response updatePlayer(String editor, PlayerDto player, int playerId) {

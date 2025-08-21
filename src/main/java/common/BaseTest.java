@@ -17,7 +17,7 @@ public class BaseTest extends PlayerControllerApi {
 
 
     public Integer createPlayer(PlayerDto player, String editorRole) {
-        return getPlayerIdFromResponse(createPlayerWithResponse(player, "supervisor"));
+        return getPlayerIdFromResponse(createPlayerWithResponse(player, editorRole));
     }
 
     public Integer getPlayerIdFromResponse(Response response) {
@@ -45,10 +45,8 @@ public class BaseTest extends PlayerControllerApi {
 
     public void deletePlayer(int playerId, String editorRole) {
         Response response = deletePlayer(editorRole, playerId);
-//        response.then().statusCode(204);
         System.out.println("Player successfully deleted" + playerId);
         playerIdsToClean.remove(Integer.valueOf(playerId));
-//        Allure.step("Player successfully deleted" + playerId);
     }
 
     public String getRandomUserName(String userName) {

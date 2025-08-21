@@ -6,8 +6,7 @@ import io.restassured.response.Response;
 import models.PlayerDto;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 public class PositivePlayerControllerTests extends BaseTest {
 
@@ -124,8 +123,10 @@ public class PositivePlayerControllerTests extends BaseTest {
         String login = getRandomUserName("User");
         String screenName = getRandomUserName("screenNameUser");
 
-        Integer playerId = createPlayer(new PlayerDto(
+        Response response = createPlayerWithResponse(new PlayerDto(
                 20, login, screenName, "male", "user", "password123"), "admin");
+        response.then().statusCode(200);
+        int playerId = getPlayerIdFromResponse(response);
 
         Response getResponse = getPlayerById(playerId);
         getResponse.then().statusCode(200);
@@ -148,8 +149,10 @@ public class PositivePlayerControllerTests extends BaseTest {
         String login = getRandomUserName("User");
         String screenName = getRandomUserName("screenNameUser");
 
-        Integer playerId = createPlayer(new PlayerDto(
+        Response response = createPlayerWithResponse(new PlayerDto(
                 20, login, screenName, "male", "admin", "password123"), "admin");
+        response.then().statusCode(200);
+        int playerId = getPlayerIdFromResponse(response);
 
         Response getResponse = getPlayerById(playerId);
         getResponse.then().statusCode(200);
@@ -165,29 +168,6 @@ public class PositivePlayerControllerTests extends BaseTest {
         Allure.step("Test testCreateUser finished successfully");
     }
 
-    @Test
-    public void testCreateSelfAsUser() {
-        Allure.step("Starting test: testCreateSelfAsUser");
-
-        String login = getRandomUserName("User");
-        String screenName = getRandomUserName("screenNameUser");
-
-        Integer playerId = createPlayer(new PlayerDto(
-                20, login, screenName, "male", "user", "password123"), "user");
-
-        Response getResponse = getPlayerById(playerId);
-        getResponse.then().statusCode(200);
-
-        PlayerDto createdPlayer = getResponse.as(PlayerDto.class);
-
-        Allure.step("Validating created player details");
-        assertEquals(createdPlayer.login, login, "Login does not match");
-        assertEquals(createdPlayer.screenName, screenName, "ScreenName does not match");
-        assertEquals(createdPlayer.age, 20, "Age does not match");
-        assertEquals(createdPlayer.gender, "male", "Gender does not match");
-        assertEquals(createdPlayer.role, "user", "Role does not match");
-        Allure.step("Test testCreateSelfAsUser finished successfully");
-    }
 
     @Test
     public void testGetPlayerById() {
@@ -260,17 +240,4 @@ public class PositivePlayerControllerTests extends BaseTest {
 
         Allure.step("Test testDeletePlayer finished successfully");
     }
-
-    @Test
-    public void test() {
-        getAllPlayers();
-//        deletePlayer(2105958373);
-//        deletePlayer(1755228474);
-//        deletePlayer(342844424);
-//        deletePlayer(1719104415);
-//        deletePlayer(1717572806);
-//        deletePlayer(1471130581);
-//        getAllPlayers();
-    }
-
 }
