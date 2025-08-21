@@ -1,7 +1,6 @@
 package common;
 
 import apiCalls.PlayerControllerApi;
-import io.qameta.allure.Allure;
 import io.qameta.allure.testng.AllureTestNg;
 import io.restassured.response.Response;
 import models.PlayerDto;
@@ -17,15 +16,15 @@ public class BaseTest extends PlayerControllerApi {
     public ArrayList<Integer> playerIdsToClean = new ArrayList<>();
 
 
-    public Integer createPlayer(PlayerDto player) {
-        return getPlayerIdFromResponse(createPlayerWithResponse(player));
+    public Integer createPlayer(PlayerDto player, String editorRole) {
+        return getPlayerIdFromResponse(createPlayerWithResponse(player, "supervisor"));
     }
 
     public Integer getPlayerIdFromResponse(Response response) {
         try {
             return response.jsonPath().getInt("id");
-        }
-        catch (Exception noBodyOrIdInResponse) { //probably should change with more specific exception, i just don't know it for now
+        } catch (
+                Exception noBodyOrIdInResponse) { //probably should change with more specific exception, i just don't know it for now
             return null;
         }
     }
@@ -34,8 +33,8 @@ public class BaseTest extends PlayerControllerApi {
         return response.getStatusCode();
     }
 
-    public Response createPlayerWithResponse(PlayerDto player) {
-        Response response = createPlayer("supervisor", player);
+    public Response createPlayerWithResponse(PlayerDto player, String editorRole) {
+        Response response = createPlayer(editorRole, player);
         Integer id = getPlayerIdFromResponse(response);
         if (id != null) {
             System.out.println("Id added to array: " + id);
@@ -44,15 +43,15 @@ public class BaseTest extends PlayerControllerApi {
         return response;
     }
 
-    public void deletePlayer(int playerId) {
-        Response response = deletePlayer("supervisor", playerId);
+    public void deletePlayer(int playerId, String editorRole) {
+        Response response = deletePlayer(editorRole, playerId);
 //        response.then().statusCode(204);
         System.out.println("Player successfully deleted" + playerId);
         playerIdsToClean.remove(Integer.valueOf(playerId));
 //        Allure.step("Player successfully deleted" + playerId);
     }
 
-    public String getRandomUserName (String userName) {
+    public String getRandomUserName(String userName) {
         String randomString = UUID.randomUUID().toString();
         return userName + randomString;
     }
@@ -60,6 +59,6 @@ public class BaseTest extends PlayerControllerApi {
     @AfterClass(alwaysRun = true)
     public void cleanup() {
         List<Integer> idsCopied = new ArrayList<>(playerIdsToClean);
-        idsCopied.forEach(this::deletePlayer);
+        idsCopied.forEach(id -> deletePlayer(id, "supervisor"));
     }
 }
